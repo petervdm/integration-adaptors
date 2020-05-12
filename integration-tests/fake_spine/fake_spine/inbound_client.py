@@ -25,7 +25,7 @@ class InboundClient(object):
 
     async def make_request(self, request: InboundRequest):
         logger.info(f'Making inbound request to {self.inbound_url}')
-        asyncio.create_task(self.http_client.fetch(self.inbound_url,
+        asyncio.ensure_future(self.http_client.fetch(self.inbound_url,
                                                 method='POST',
                                                 body=request.body,
                                                 raise_error=True,
