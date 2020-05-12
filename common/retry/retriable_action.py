@@ -11,7 +11,7 @@ logger = log.IntegrationAdaptorsLogger(__name__)
 class RetriableAction(object):
     """Responsible for retrying an action a configurable number of times with a configurable delay"""
 
-    def __init__(self, action: Callable[[...], Awaitable[object]], retries: int, delay: float):
+    def __init__(self, action: Callable[[], Awaitable[object]], retries: int, delay: float):
         """
 
         :param action: The action to be retried.
@@ -54,13 +54,13 @@ class RetriableAction(object):
         self.retriable_exception_check = exception_check
         return self
 
-    async def execute(self, *args, **kwargs) -> RetriableActionResult:
+    async def execute(self) -> RetriableActionResult:
         """Execute the action, retrying as necessary.
 
         :return: A RetriableActionResult that represents the result of the final attempt to perform the specified
         action.
         """
-        result = await self._execute_action(*args, **kwargs)
+        result = await self._execute_action()
 
         if self._retry_required(result):
             for i in range(self.retries):
@@ -68,7 +68,7 @@ class RetriableAction(object):
                             fparams={"delay": self.delay, "action": self.action})
                 await asyncio.sleep(self.delay)
 
-                result = await self._execute_action(*args, **kwargs)
+                result = await self._execute_action()
 
                 if not self._retry_required(result):
                     break
@@ -79,12 +79,12 @@ class RetriableAction(object):
 
         return result
 
-    async def _execute_action(self, *args, **kwargs) -> RetriableActionResult:
+    async def _execute_action(self) -> RetriableActionResult:
         result = RetriableActionResult()
 
         try:
             logger.info("About to try {action}.", fparams={"action": self.action})
-            action_result = await self.action(*args, **kwargs)
+            action_result = await self.action()
 
             result.result = action_result
             result.is_successful = self.success_check(action_result)

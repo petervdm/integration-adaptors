@@ -28,8 +28,11 @@ class AsynchronousExpressWorkflow(common_asynchronous.CommonAsynchronousWorkflow
                  transmission: transmission_adaptor.TransmissionAdaptor = None,
                  queue_adaptor: queue_adaptor.QueueAdaptor = None,
                  max_request_size: int = None,
+                 persistence_store_max_retries: int = None,
                  routing: routing_reliability.RoutingAndReliability = None):
-        super().__init__(party_key, persistence_store, transmission, queue_adaptor, max_request_size, routing)
+        super().__init__(party_key, persistence_store, transmission,
+                         queue_adaptor, max_request_size,
+                         persistence_store_max_retries, routing)
 
         self.workflow_specific_interaction_details = dict(duplicate_elimination=False,
                                                           ack_requested=False,
