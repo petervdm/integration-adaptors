@@ -54,7 +54,7 @@ state_data = [
 ]
 
 
-async def state_return_values(message_key, strongly_consistent_read):
+async def state_return_values(message_key):
     """
     A method to emulate a state store returning values for a given key
     :param message_key:
